@@ -36,11 +36,6 @@ void Map::GetWidthAndHeight(float& w, float& h)
     h = _height;
 }
 
-double getDist(double aX, double aY, double bX, double bY)
-{
-    return std::sqrt(std::pow(bX - aX, 2) + std::pow(bY - aY, 2));
-}
-
 float Map::GetDistance2d(Object* obj1, Object* obj2)
 {
     Position pos1;
