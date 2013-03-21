@@ -1,0 +1,16 @@
+Heex require OpenGL glut package
+
+On Ubuntu :
+    apt-get install freeglut3-dev
+
+On Fedora :
+    yum install freeglut-devel
+
+On Debian :
+    apt-get install freeglut3-dev
+
+On Arch Linux :
+    pacman -S freeglut
+
+On Windows:
+    fuck up Windows
