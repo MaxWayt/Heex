@@ -29,6 +29,7 @@ Map* MapGenerator::CreateNewRandomMap(const uint32 width, const uint32 height, f
     complexity = (int32)(complexity * (5 * (shape[0] + shape[1])));
     density = (int32)(density * (shape[0] / 2 * shape[1] / 2));
 
+    #pragma omp parallel for shared(map)
     for (int32 i = 0; i < (int32)density; ++i)
     {
         uint32 x = (rand() % (shape[1] / 2)) * 2;

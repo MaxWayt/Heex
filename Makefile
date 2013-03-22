@@ -9,8 +9,9 @@ RM	= rm -f
 CXXFLAGS	+= -Wextra -Wall -Werror
 CXXFLAGS	+= -I. -std=c++11 -ggdb3
 CXXFLAGS	+= -fno-omit-frame-pointer -O0
+CXXFLAGS	+= -fopenmp
 
-LDFLAGS	= -lGL -lGLU -lglut
+LDFLAGS	= -lGL -lGLU -lglut -lgomp
 
 NAME	= heex
 
