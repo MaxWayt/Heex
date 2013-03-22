@@ -8,6 +8,8 @@
 // Debug mode
 #define DEBUG
 
+#define MAP_PRECISION 5
+
 typedef unsigned char uint8;
 typedef char int8;
 typedef unsigned short uint16;

@@ -37,7 +37,7 @@ void Map::GetWidthAndHeight(float& w, float& h)
     h = _height;
 }
 
-float Map::GetDistance2d(Object* obj1, Object* obj2)
+float Map::GetDistance2d(Object const* obj1, Object const* obj2)
 {
     Position pos1;
     Position pos2;
@@ -53,7 +53,9 @@ float Map::GetDistance2d(Position const& pos1, Position const& pos2)
 
 float Map::GetDistance2d(float x1, float y1, float x2, float y2)
 {
-    return std::sqrt(std::pow(x2 - x1, 2) + std::pow(y2 - y1, 2));
+    float dx = x2 - x1;
+    float dy = y2 - y1;
+    return std::sqrt(dx * dx + dy * dy);
 }
 
 void Map::GetObjectListInRange(Position const& pos, float range, ObjectList& list)
@@ -94,8 +96,9 @@ bool Map::IntersectObjectAt(float x, float y, float z, Object const* obj) const
 
     for(ObjectList::const_iterator itr = _objectList.begin(); itr != _objectList.end(); ++itr)
     {
-        if ((*itr) != obj && (*itr)->IntersectObject(other))
-            return true;
+        if ((*itr) != obj && obj->GetDistance2d(*itr) <= obj->GetVisibilityRange())
+            if ((*itr)->IntersectObject(other))
+                return true;
     }
 
     return false;

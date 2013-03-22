@@ -8,7 +8,8 @@
 #include "Map.h"
 
 Object::Object(uint32 modelId, Position const& pos) :
-    _modelId(modelId), _pos(pos), _movementFlags(MOVE_NONE), _map(NULL), _speed(1.0f)
+    _modelId(modelId), _pos(pos), _movementFlags(MOVE_NONE), _map(NULL),
+    _speed(1.0f), _visibilityRange(40.0f * MAP_PRECISION)
 {
 #ifdef DEBUG
     std::cout << "Object: create an object modelid : " << modelId << " pos x : " << pos.posX << " pos y : " << pos.posY << " pos z : " << pos.posZ << " orientation : " << pos.orientation << std::endl;
@@ -16,7 +17,8 @@ Object::Object(uint32 modelId, Position const& pos) :
 }
 
 Object::Object(uint32 modelId, float x, float y, float z, float o) :
-    _modelId(modelId), _pos(x, y, z, o), _movementFlags(MOVE_NONE), _map(NULL), _speed(1.0f)
+    _modelId(modelId), _pos(x, y, z, o), _movementFlags(MOVE_NONE), _map(NULL),
+    _speed(1.0f), _visibilityRange(40.0f * MAP_PRECISION)
 {
 #ifdef DEBUG
     std::cout << "Object: create an object modelid : " << modelId << " pos x : " << x << " pos y : " << y << " pos z : " << z << " orientation : " << o << std::endl;
@@ -72,6 +74,18 @@ float Object::GetOrientation() const
 uint32 Object::GetModelId() const
 {
     return _modelId;
+}
+
+float Object::GetVisibilityRange() const
+{
+    return _visibilityRange;
+}
+
+float Object::GetDistance2d(Object const* other) const
+{
+    if (!_map)
+        return -1.0f;
+    return _map->GetDistance2d(this, other);
 }
 
 void Object::SetMap(Map* map)

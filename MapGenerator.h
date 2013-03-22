@@ -8,8 +8,6 @@
 #include "SharedDefines.h"
 #include "Map.h"
 
-#define MAP_PRECISION 5
-
 class MapGenerator
 {
 public:

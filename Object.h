@@ -47,6 +47,8 @@ public:
     float GetOrientation() const;
 
     uint32 GetModelId() const;
+    float GetVisibilityRange() const;
+    float GetDistance2d(Object const* other) const;
 
     void SetMap(Map* map);
     void AddMovementFlag(uint32 flag);
@@ -64,6 +66,7 @@ protected:
     uint32 _movementFlags;
     Map* _map;
     float _speed;
+    float _visibilityRange;
 };
 
 #endif /* !OBJECT_H_ */

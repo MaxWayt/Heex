@@ -24,7 +24,7 @@ public:
     void AddObject(Object* obj);
 
     void GetWidthAndHeight(float& w, float& h);
-    static float GetDistance2d(Object* obj1, Object* obj2);
+    static float GetDistance2d(Object const* obj1, Object const* obj2);
     static float GetDistance2d(Position const& pos1, Position const& pos2);
     static float GetDistance2d(float x1, float y1, float x2, float y2);
     void GetObjectListInRange(Position const& pos, float range, ObjectList& list);
