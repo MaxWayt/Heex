@@ -7,6 +7,7 @@
 #include <vector>
 #include <fstream>
 #include "MapGenerator.h"
+#include "Object.h"
 
 Map* MapGenerator::CreateNewRandomMap(const uint32 width, const uint32 height, float complexity, float density)
 {

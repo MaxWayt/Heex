@@ -13,6 +13,7 @@
 #include "Object.h"
 #include "Map.h"
 #include "MapGenerator.h"
+#include "ModelMgr.h"
 
 #define HEIGHT 200
 #define WIDTH 200
@@ -82,62 +83,12 @@ void drawCube(double baseX, double baseY, double baseZ, double width, double hei
     glEnd();
 }
 
-/*void keyOperations(int i = 0)
-{
-    glutTimerFunc(2, keyOperations, 0);
-    (void)i;
-
-    for (int i = 0; i < 256; ++i)
-    {
-        if (keyStates[i])
-        {
-            bool handled = true;
-            switch ((char)i)
-            {
-                case 'w': // haut
-                    movePos(dir[0], dir[1], dir[2], M_PI);
-                    break;
-                case 's': // bas
-                    movePos(dir[0], dir[1], dir[2], 0.0);
-                    break;
-                case 'd': // droite
-                    orrientation += (-0.10 * speed * 1.15);
-                    //dir[1] += 1;
-                    break;
-                case 'a': // gauche
-                    orrientation += (0.10 * speed * 1.15);
-                    //dir[1] += -1;
-                    break;
-                case 'k':
-                    dir[2] += 1;
-                    pos[2] += 1;
-                    break;
-                case 'j':
-                    if (dir[2] > 0)
-                    {
-                        dir[2] += -1;
-                        pos[2] += -1;
-                    }
-                default:
-                    handled = false;
-            }
-            if (handled)
-            {
-                pos[0] = dir[0] + dist * cos(orrientation);
-                pos[1] = dir[1] + dist * sin(orrientation);
-            }
-        }
-    }
-}*/
-
 void drawObject(Object const* obj)
 {
     float x, y, z;
     obj->GetPosition(x, y, z);
-    if (obj->GetModelId() == 1)
-        drawCube(x, y, z, 1.0 * PRECISION, 1.0 * PRECISION, 4.0);
-    else if (obj->GetModelId() == 2) // player
-        drawCube(x - 0.3, y + 0.3, z, 0.6, 0.6, 1.80, 255, 0, 0);
+    Model const* model = sModelMgr->GetModel(obj);
+    drawCube(x - model->width / 2, y - model->height / 2, z, model->width, model->height, model->zsize, model->colorR, model->colorG, model->colorB);
 }
 void draw()
 {
@@ -319,85 +270,6 @@ void visibility(int state)
         glutIdleFunc(NULL);
 }
 
-/*void generateMap()
-{
-    std::cout << ">> Generating random map ";
-    std::cout.flush();
-    const unsigned int width = WIDTH;
-    const unsigned int height = HEIGHT;
-    double complexity = 0.35;
-    double density = 0.35;
-
-    map = new double*[height + 1];
-    for (unsigned int i = 0; i <= height; ++i)
-    {
-        map[i] = new double[width + 1];
-        for (unsigned int j = 0; j <= width; ++j)
-            map[i][j] = 0;
-    }
-
-    unsigned int shape[2];
-    shape[0] = ((height / 2) * 2 + 1);
-    shape[1] = ((width / 2) * 2 + 1);
-
-    complexity = (int)(complexity * (5 * (shape[0] + shape[1])));
-    density = (int)(density * (shape[0] / 2 * shape[1] / 2));
-
-    for (unsigned int y = 0; y > height; ++y)
-    {
-        map[y][0] = 4;
-        map[y][width - 1] = 4;
-    }
-    for (unsigned int x = 0; x < width; ++x)
-    {
-        map[0][x] = 4;
-        map[height - 1][x] = 4;
-    }
-
-    for (int i = 0; i < (int)density; ++i)
-    {
-        unsigned int x = (rand() % (shape[1] / 2)) * 2;
-        unsigned int y = (rand() % (shape[0] / 2)) * 2;
-        map[y][x] = 3;
-        if (i % ((int)density / 10) == 0)
-        {
-            std:: cout << ".";
-            std::cout.flush();
-        }
-
-        for (int j = 0; j < (int)complexity; ++j)
-        {
-            std::vector<std::pair<int, int>> neighbours;
-            if (x > 1)
-                neighbours.push_back(std::make_pair(y, x - 2));
-            if (x < shape[1] - 2)
-                neighbours.push_back(std::make_pair(y, x + 2));
-            if (y > 1)
-                neighbours.push_back(std::make_pair(y - 2, x));
-            if (y < shape[0] - 2)
-                neighbours.push_back(std::make_pair(y + 2, x));
-            if (neighbours.size() > 0)
-            {
-                std::pair<int, int> pair = neighbours[rand() % neighbours.size()];
-                unsigned int y_ = pair.first;
-                unsigned int x_ = pair.second;
-                if (map[y_][x_] == 0)
-                {
-                    map[y_][x_] = 3;
-                    map[y_ + ((int)y - (int)y_) / 2][x_ + ((int)x - (int)x_) / 2] = 3;
-                    x = x_;
-                    y = y_;
-                }
-            }
-        }
-    }
-    for (unsigned int i = 0; i <= height; ++i)
-        map[i][width] = -1;
-    for (unsigned int i = 0; i <= width; ++i)
-        map[height][i] = -1;
-    std::cout << std::endl << "Map generated" << std::endl;
-}*/
-
 void UpdatePlayerPosition(int i = 0)
 {
     (void)i;
@@ -414,7 +286,7 @@ int main(int ac, char **av)
 {
     srand(time(NULL));
     map = MapGenerator::CreateNewRandomMap(WIDTH, HEIGHT, 0.35, 0.35);
-    player = new Object(2, 10.0f, 10.0f, 0.0f, 0.0f);
+    player = new Object(2, 7.0f, 7.0f, 0.0f, 0.0f);
     map->AddObject(player);
     glutInit(&ac, av);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);

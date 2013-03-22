@@ -117,15 +117,48 @@ void Object::ModSpeed(float delta)
 
 void Object::MovePositionAt(float& x, float& y, float dist, float angle) const
 {
-    float destx, desty;
+    if (!_map)
+        return;
+
+    float destx, desty, currDist;
     angle += _pos.orientation;
+    currDist = dist;
 
-    destx = x + dist * cos(angle);
-    desty = y + dist * sin(angle);
+    while (currDist > 0.0f)
+    {
 
-    if (!_map || !_map->IsValidePosition(destx, desty, _pos.posZ))
+        destx = x + currDist * cos(angle);
+        desty = y + currDist * sin(angle);
+
+        if (_map->IsValidePosition(destx, desty, _pos.posZ) && !_map->IntersectObjectAt(destx, desty, _pos.posZ, this))
+            break;
+
+        currDist -= 0.2f;
+    }
+
+    if (currDist <= 0.0f)
         return;
 
     x = destx;
     y = desty;
 }
+
+bool Object::IntersectObject(Object const* obj) const
+{
+    ModelBox other = sModelMgr->GetModelBox(obj);
+    return IntersectObject(other);
+}
+
+bool Object::IntersectObject(ModelBox const& other) const
+{
+    ModelBox self = sModelMgr->GetModelBox(this);
+
+    if (self.max.x < other.min.x || self.min.x > other.max.x)
+        return false;
+    if (self.max.y < other.min.y || self.min.y > other.max.y)
+        return false;
+    if (self.max.z < other.min.z || self.min.z > other.max.z)
+        return false;
+    return true;
+}
+

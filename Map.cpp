@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include "Map.h"
+#include "Object.h"
 
 Map::Map(float w, float h) : _objectList(), _width(w), _height(h)
 {
@@ -82,16 +83,21 @@ bool Map::IsValidePosition(float x, float y, float z) const
     return true; // TODO
 }
 
-bool Map::IntersectObjectAt(Position const& pos) const
+bool Map::IntersectObjectAt(Position const& pos, Object const* obj) const
 {
-    return IntersectObjectAt(pos.posX, pos.posY, pos.posZ);
+    return IntersectObjectAt(pos.posX, pos.posY, pos.posZ, obj);
 }
 
-bool Map::IntersectObjectAt(float x, float y, float z) const
+bool Map::IntersectObjectAt(float x, float y, float z, Object const* obj) const
 {
-    (void)x;
-    (void)y;
-    (void)z;
-    return false; // TODO
+    ModelBox other = sModelMgr->GetModelBoxAtPos(x, y, z, obj->GetModelId());
+
+    for(ObjectList::const_iterator itr = _objectList.begin(); itr != _objectList.end(); ++itr)
+    {
+        if ((*itr) != obj && (*itr)->IntersectObject(other))
+            return true;
+    }
+
+    return false;
 }
 

@@ -14,7 +14,7 @@ LDFLAGS	= -lGL -lGLU -lglut
 
 NAME	= heex
 
-SRCS	= main.cpp Object.cpp Map.cpp MapGenerator.cpp
+SRCS	= main.cpp Object.cpp Map.cpp MapGenerator.cpp ModelMgr.cpp
 
 OBJS	= $(SRCS:.cpp=.o)
 

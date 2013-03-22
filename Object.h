@@ -6,6 +6,7 @@
 # define OBJECT_H_
 
 #include "SharedDefines.h"
+#include "ModelMgr.h"
 
 class Map;
 
@@ -54,6 +55,8 @@ public:
     void UpdatePosition();
     void ModSpeed(float delta);
     void MovePositionAt(float& x, float& y, float dist, float angle) const;
+    bool IntersectObject(Object const* obj) const;
+    bool IntersectObject(ModelBox const& other) const;
 
 protected:
     uint32 _modelId;

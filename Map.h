@@ -8,7 +8,9 @@
 #include <list>
 #include <iostream>
 #include "SharedDefines.h"
-#include "Object.h"
+
+struct Position;
+class Object;
 
 class Map
 {
@@ -30,8 +32,8 @@ public:
 
     bool IsValidePosition(Position const& pos) const;
     bool IsValidePosition(float x, float y, float z) const;
-    bool IntersectObjectAt(Position const& pos) const;
-    bool IntersectObjectAt(float x, float y, float z) const;
+    bool IntersectObjectAt(Position const& pos, Object const* obj) const;
+    bool IntersectObjectAt(float x, float y, float z, Object const* obj) const;
 protected:
     ObjectList _objectList;
     float _width;
