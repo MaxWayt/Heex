@@ -34,6 +34,8 @@ public:
     bool IsValidePosition(float x, float y, float z) const;
     bool IntersectObjectAt(Position const& pos, Object const* obj) const;
     bool IntersectObjectAt(float x, float y, float z, Object const* obj) const;
+
+    void GetAllObjectList(ObjectList& list) { list = _objectList; }
 protected:
     ObjectList _objectList;
     float _width;

@@ -285,7 +285,8 @@ void UpdatePlayerPosition(int i = 0)
 int main(int ac, char **av)
 {
     srand(time(NULL));
-    map = MapGenerator::CreateNewRandomMap(WIDTH, HEIGHT, 0.35, 0.35);
+    //map = MapGenerator::CreateNewRandomMap(WIDTH, HEIGHT, 0.35, 0.35);
+    map = MapGenerator::GetNewMapFromNode(WIDTH, HEIGHT, 0.35, 0.42, "127.0.0.1", "9000");
     player = new Object(2, 7.0f, 7.0f, 0.0f, 0.0f);
     map->AddObject(player);
     glutInit(&ac, av);

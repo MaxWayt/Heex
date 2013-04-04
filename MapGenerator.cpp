@@ -6,7 +6,11 @@
 #include <cstdlib>
 #include <vector>
 #include <fstream>
+#include <boost/bind.hpp>
+#include <boost/asio.hpp>
 #include "MapGenerator.h"
+#include "ByteBuffer.h"
+#include "Opcodes.h"
 #include "Object.h"
 
 Map* MapGenerator::CreateNewRandomMap(const uint32 width, const uint32 height, float complexity, float density)
@@ -84,5 +88,88 @@ Map* MapGenerator::CreateNewRandomMap(const uint32 width, const uint32 height, f
     file.close();
     std::cout << std::endl << "Map generated" << std::endl;
 
+    return newMap;
+}
+
+Map* MapGenerator::GetNewMapFromNode(const uint32 width, const uint32 height, float complexity, float density, std::string const& address, std::string const& port)
+{
+    using boost::asio::ip::tcp;
+    boost::asio::io_service io_service;
+    tcp::resolver resolver(io_service);
+    tcp::resolver::query query(address.c_str(), port.c_str());
+    tcp::resolver::iterator iterator = resolver.resolve(query);
+    tcp::socket socket(io_service);
+
+    std::cout << "Connecting to : " << address << ":" << port << " ..." << std::endl;
+    socket.connect(*iterator);
+    std::cout << "Requesting for map ..." << std::endl;
+    Pkt data;
+    data << width;
+    data << height;
+    data << complexity;
+    data << density;
+    std::string mdp = "poney42";
+    data << mdp;
+    data.SetOpcode(SMSG_HASK_MAP);
+    data.hexlike();
+    socket.write_some(boost::asio::buffer(data.contents(), data.size()));
+    char buffer[512];
+    memset(buffer, 0, 512);
+    size_t size = socket.read_some(boost::asio::buffer(buffer, 512));
+    uint16 opcode = *((uint16 const*)&buffer[2]);
+    if (size == 0 || opcode != MMSG_MAP_RESPONSE)
+    {
+        std::cout << "Receiv an unexpected reponse, aborting ..." << std::endl;
+        return NULL;
+    }
+    uint8 response = buffer[4];
+    if (response != MapGenerator::RESPONSE_OK)
+    {
+        std::cout << "Fail to auth against map generator, aborting ..." << std::endl;
+        return NULL;
+    }
+    std::cout << "Map request accepted, waiting data ..." << std::endl;
+    Map* newMap = new Map(width * MAP_PRECISION, height * MAP_PRECISION);
+    float progress = 0.0f;
+    while (socket.is_open() && progress < 100.0f)
+    {
+        memset(buffer, 0, 512);
+        size_t size = socket.read_some(boost::asio::buffer(buffer, 512));
+        if (size == 0)
+        {
+            std::cout << "Received a 0 size Pkt" << std::endl;
+            continue;
+        }
+        uint16 opcode = *((uint16 const*)&buffer[2]);
+        switch (opcode)
+        {
+            case MMSG_PROGRESS:
+                {
+                    progress = *((float const*)&buffer[4]);
+                    std::cout << "Progress : " << progress << "%" << std::endl;
+                    break;
+                }
+            case MMSG_SEND_OBJECT:
+                {
+                    uint32 index = 4;
+                    float x = *((float const*)&buffer[index]);
+                    index += sizeof(float);
+                    float y = *((float const*)&buffer[index]);
+                    index += sizeof(float);
+                    float z = *((float const*)&buffer[index]);
+                    index += sizeof(float);
+                    float o = *((float const*)&buffer[index]);
+                    index += sizeof(float);
+                    uint32 display = *((uint32 const*)&buffer[index]);
+                    newMap->AddObject(new Object(display, x, y, z, o));
+                    //std:: cout << "New object registerd" << std::endl;
+                    break;
+                }
+            default:
+                std::cout << "unknow opcode : " << opcode << std::endl;
+                break;
+        }
+    }
+    socket.close();
     return newMap;
 }
