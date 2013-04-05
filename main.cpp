@@ -14,6 +14,7 @@
 #include "Map.h"
 #include "MapGenerator.h"
 #include "ModelMgr.h"
+#include "Config.h"
 
 #define HEIGHT 200
 #define WIDTH 200
@@ -284,9 +285,13 @@ void UpdatePlayerPosition(int i = 0)
 
 int main(int ac, char **av)
 {
+    sConfig->addParam("-a", "--addr", "map generator address", TYPE_FLAG_AND_VALUE, "127.0.0.1");
+    sConfig->addParam("-p", "--port", "map generator port", TYPE_FLAG_AND_VALUE, "9000");
+    sConfig->parseParam(ac, av);
+
     srand(time(NULL));
     //map = MapGenerator::CreateNewRandomMap(WIDTH, HEIGHT, 0.35, 0.35);
-    map = MapGenerator::GetNewMapFromNode(WIDTH, HEIGHT, 0.35, 0.42, "127.0.0.1", "9000");
+    map = MapGenerator::GetNewMapFromNode(WIDTH, HEIGHT, 0.35, 0.42, sConfig->getFlagValue("-a"), sConfig->getFlagValue("-p"));
     player = new Object(2, 7.0f, 7.0f, 0.0f, 0.0f);
     map->AddObject(player);
     glutInit(&ac, av);
